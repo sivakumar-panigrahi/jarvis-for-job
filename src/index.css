@@ -1,0 +1,333 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Avengers Theme Colors */
+    --background: 240 10% 4%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 6%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 6%;
+    --popover-foreground: 0 0% 98%;
+
+    /* Avengers Red */
+    --primary: 0 72% 51%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 240 10% 12%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 10% 16%;
+    --muted-foreground: 240 5% 60%;
+
+    /* Arc Reactor Blue */
+    --accent: 195 100% 50%;
+    --accent-foreground: 240 10% 4%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* Hulk Green */
+    --success: 142 72% 35%;
+    --success-foreground: 0 0% 98%;
+
+    /* Infinity Gold */
+    --warning: 43 96% 56%;
+    --warning-foreground: 240 10% 4%;
+
+    --border: 240 10% 16%;
+    --input: 240 10% 12%;
+    --ring: 0 72% 51%;
+
+    --radius: 0.75rem;
+
+    /* Avengers Custom Tokens */
+    --avengers-red: 0 72% 51%;
+    --arc-blue: 195 100% 50%;
+    --thor-purple: 265 70% 55%;
+    --captain-blue: 220 80% 55%;
+    --hulk-green: 142 72% 35%;
+    --infinity-gold: 43 96% 56%;
+    --thanos-purple: 280 60% 45%;
+    --iron-gold: 40 90% 50%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(0 72% 51%) 0%, hsl(40 90% 50%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(240 10% 8%) 0%, hsl(240 10% 5%) 100%);
+    --gradient-glow: radial-gradient(ellipse at center, hsl(0 72% 51% / 0.15) 0%, transparent 70%);
+    --gradient-arc: linear-gradient(135deg, hsl(195 100% 50%) 0%, hsl(220 80% 55%) 100%);
+    
+    --shadow-glow: 0 0 40px hsl(0 72% 51% / 0.3);
+    --shadow-arc: 0 0 30px hsl(195 100% 50% / 0.3);
+    --shadow-card: 0 4px 24px hsl(240 10% 2% / 0.5);
+    
+    --glass-bg: hsl(240 10% 8% / 0.8);
+    --glass-border: hsl(0 72% 51% / 0.2);
+
+    --sidebar-background: 240 10% 6%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 0 72% 51%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 10% 12%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 10% 16%;
+    --sidebar-ring: 0 72% 51%;
+  }
+
+  .dark {
+    --background: 240 10% 4%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 6%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 6%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 72% 51%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 10% 12%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 10% 16%;
+    --muted-foreground: 240 5% 60%;
+    --accent: 195 100% 50%;
+    --accent-foreground: 240 10% 4%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 10% 16%;
+    --input: 240 10% 12%;
+    --ring: 0 72% 51%;
+    --sidebar-background: 240 10% 6%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 0 72% 51%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 10% 12%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 10% 16%;
+    --sidebar-ring: 0 72% 51%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Outfit', sans-serif;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px);
+  }
+
+  .gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-arc {
+    background: var(--gradient-arc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glow-effect {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .arc-glow {
+    box-shadow: var(--shadow-arc);
+  }
+
+  /* Avengers Animations */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  .animate-repulsor {
+    animation: repulsorGlow 2s ease-in-out infinite;
+  }
+
+  .animate-shield-spin {
+    animation: shieldSpin 3s linear infinite;
+  }
+
+  .animate-lightning {
+    animation: lightning 4s ease-in-out infinite;
+  }
+
+  .animate-assemble {
+    animation: assembleSlide 0.6s ease-out forwards;
+  }
+
+  .animate-infinity-float {
+    animation: infinityFloat 4s ease-in-out infinite;
+  }
+
+  .animate-arc-pulse {
+    animation: arcPulse 2s ease-in-out infinite;
+  }
+}
+
+/* Keyframes */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 20px hsl(0 72% 51% / 0.3); }
+  50% { box-shadow: 0 0 40px hsl(0 72% 51% / 0.6); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes repulsorGlow {
+  0%, 100% { 
+    box-shadow: 0 0 20px hsl(0 72% 51% / 0.4), 
+                0 0 40px hsl(40 90% 50% / 0.2),
+                inset 0 0 20px hsl(0 72% 51% / 0.1);
+  }
+  50% { 
+    box-shadow: 0 0 30px hsl(0 72% 51% / 0.6), 
+                0 0 60px hsl(40 90% 50% / 0.3),
+                inset 0 0 30px hsl(0 72% 51% / 0.2);
+  }
+}
+
+@keyframes shieldSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes lightning {
+  0%, 90%, 100% { opacity: 1; }
+  92%, 94%, 96% { opacity: 0.3; }
+  91%, 93%, 95%, 97% { opacity: 1; }
+}
+
+@keyframes assembleSlide {
+  0% { opacity: 0; transform: translateX(-30px) scale(0.95); }
+  100% { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes infinityFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-5px) rotate(5deg); }
+  50% { transform: translateY(-10px) rotate(0deg); }
+  75% { transform: translateY(-5px) rotate(-5deg); }
+}
+
+@keyframes arcPulse {
+  0%, 100% { 
+    box-shadow: 0 0 15px hsl(195 100% 50% / 0.5),
+                0 0 30px hsl(195 100% 50% / 0.3);
+  }
+  50% { 
+    box-shadow: 0 0 25px hsl(195 100% 50% / 0.7),
+                0 0 50px hsl(195 100% 50% / 0.4);
+  }
+}
+
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/* Custom scrollbar - Avengers themed */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(240 10% 4%);
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(0 72% 51% / 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(0 72% 51% / 0.7);
+}
+
+/* Calendar dropdown styling */
+.rdp-dropdown_month select,
+.rdp-dropdown_year select {
+  background-color: hsl(var(--secondary)) !important;
+  color: hsl(var(--foreground)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+}
+
+.rdp-dropdown_month select option,
+.rdp-dropdown_year select option {
+  background-color: hsl(var(--popover)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Avengers card hover effects */
+.avengers-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.avengers-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    hsl(0 72% 51% / 0.1),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.avengers-card:hover::before {
+  left: 100%;
+}
+
+/* Infinity stone colors for particles */
+.stone-power { background: hsl(280 60% 50%); }
+.stone-space { background: hsl(220 80% 55%); }
+.stone-reality { background: hsl(0 72% 51%); }
+.stone-soul { background: hsl(30 90% 50%); }
+.stone-time { background: hsl(142 72% 45%); }
+.stone-mind { background: hsl(50 96% 56%); }
