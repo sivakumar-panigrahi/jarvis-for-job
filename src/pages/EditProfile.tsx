@@ -48,8 +48,8 @@ const profileSchema = z.object({
   college_name: z.string().min(2, 'College name is required').max(200),
   department: z.string().min(1, 'Please select a department'),
   qualification: z.enum(['UG', 'PG'], { required_error: 'Please select qualification' }),
-  graduation_percentage: z.number().min(0, 'Percentage must be at least 0').max(100, 'Percentage cannot exceed 100'),
-  year_of_passout: z.number().min(1980).max(currentYear + 10),
+  graduation_percentage: z.number({ invalid_type_error: "Required" }).min(0, 'Percentage must be at least 0').max(100, 'Percentage cannot exceed 100'),
+  year_of_passout: z.number({ invalid_type_error: "Required" }).min(1980).max(currentYear + 10),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -108,14 +108,13 @@ export default function EditProfile() {
     }
   }, [profile, form]);
 
-  const handleResumeUpload = async (url: string) => {
+  const handleResumeUpload = (url: string) => {
     setResumeUrl(url);
-    if (user) {
-      await supabase
-        .from('profiles')
-        .update({ resume_url: url })
-        .eq('id', user.id);
-    }
+    // Removed immediate Supabase update to prevent data wiping
+    toast({
+      title: 'Resume uploaded',
+      description: 'Click "Save Changes" to update your profile.',
+    });
   };
 
   const onSubmit = async (data: ProfileFormData) => {
