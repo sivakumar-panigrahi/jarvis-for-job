@@ -34,7 +34,7 @@ const DEPARTMENTS = [
 ] as const;
 
 const currentYear = new Date().getFullYear();
-const YEARS = Array.from({ length: 30 }, (_, i) => currentYear - 15 + i); // 15 years back to 15 years forward
+const YEARS = Array.from({ length: 30 }, (_, i) => currentYear - 15 + i);
 
 const profileSchema = z.object({
   full_name: z.string().min(2, 'Full name must be at least 2 characters').max(100),
@@ -49,8 +49,8 @@ const profileSchema = z.object({
   college_name: z.string().min(2, 'College name is required').max(200),
   department: z.string().min(1, 'Please select a department'),
   qualification: z.enum(['UG', 'PG'], { required_error: 'Please select qualification' }),
-  graduation_percentage: z.number().min(0, 'Percentage must be at least 0').max(100, 'Percentage cannot exceed 100'),
-  year_of_passout: z.number().min(1980).max(currentYear + 10),
+  graduation_percentage: z.number({ invalid_type_error: "Required" }).min(0, 'Percentage must be at least 0').max(100, 'Percentage cannot exceed 100'),
+  year_of_passout: z.number({ invalid_type_error: "Required" }).min(1980).max(currentYear + 10),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -88,7 +88,7 @@ export default function CompleteProfile() {
   }, [watchDob]);
 
   const completionProgress = useMemo(() => {
-    const totalFields = 10; // personal + education + resume required fields
+    const totalFields = 10;
     let completed = 0;
     
     if (watchAllFields.full_name?.length >= 2) completed++;
@@ -98,14 +98,16 @@ export default function CompleteProfile() {
     if (watchAllFields.college_name?.length >= 2) completed++;
     if (watchAllFields.department) completed++;
     if (watchAllFields.qualification) completed++;
-    if (watchAllFields.graduation_percentage !== undefined) completed++;
-    if (watchAllFields.year_of_passout) completed++;
+    // Check for valid numbers (not NaN)
+    if (watchAllFields.graduation_percentage !== undefined && !isNaN(watchAllFields.graduation_percentage)) completed++;
+    if (watchAllFields.year_of_passout && !isNaN(watchAllFields.year_of_passout)) completed++;
     if (resumeUrl) completed++;
     
-    return (completed / totalFields) * 100;
+    return Math.min(100, (completed / totalFields) * 100);
   }, [watchAllFields, resumeUrl]);
 
   const isFormValid = form.formState.isValid;
+  const isReadyToSubmit = isFormValid && !!resumeUrl;
 
   useEffect(() => {
     if (!loading) {
@@ -120,38 +122,49 @@ export default function CompleteProfile() {
   // Pre-fill form if profile data exists
   useEffect(() => {
     if (profile) {
-      form.reset({
-        full_name: profile.full_name || '',
-        date_of_birth: profile.date_of_birth ? new Date(profile.date_of_birth) : undefined,
-        phone: profile.phone || '',
-        github_url: profile.github_url || '',
-        skills: profile.skills || [],
-        college_name: profile.college_name || '',
-        department: profile.department || '',
-        qualification: profile.qualification as 'UG' | 'PG' | undefined,
-        graduation_percentage: profile.graduation_percentage ?? undefined,
-        year_of_passout: profile.year_of_passout ?? undefined,
-      });
-      setResumeUrl(profile.resume_url || null);
+      // We only reset if the form isn't dirty to avoid overwriting user input during edits
+      // But for initial load, we populate.
+      const currentValues = form.getValues();
+      const isClean = !form.formState.isDirty;
+
+      if (isClean) {
+        form.reset({
+          full_name: profile.full_name || '',
+          date_of_birth: profile.date_of_birth ? new Date(profile.date_of_birth) : undefined,
+          phone: profile.phone || '',
+          github_url: profile.github_url || '',
+          skills: profile.skills || [],
+          college_name: profile.college_name || '',
+          department: profile.department || '',
+          qualification: profile.qualification as 'UG' | 'PG' | undefined,
+          graduation_percentage: profile.graduation_percentage ?? undefined,
+          year_of_passout: profile.year_of_passout ?? undefined,
+        });
+        setResumeUrl(profile.resume_url || null);
+      }
     }
   }, [profile, form]);
 
-  const handleResumeUpload = async (url: string) => {
+  const handleResumeUpload = (url: string) => {
+    // Only update local state, do not trigger DB update yet
     setResumeUrl(url);
-    
-    // Update the database with resume info
-    if (user) {
-      await supabase
-        .from('profiles')
-        .update({
-          resume_url: url,
-        })
-        .eq('id', user.id);
-    }
+    toast({
+      title: 'Resume uploaded',
+      description: 'Continue filling the form and submit to save.',
+    });
   };
 
   const onSubmit = async (data: ProfileFormData) => {
     if (!user) return;
+    
+    if (!resumeUrl) {
+      toast({
+        variant: 'destructive',
+        title: 'Resume missing',
+        description: 'Please upload your resume before continuing.',
+      });
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -484,7 +497,7 @@ export default function CompleteProfile() {
               <Label htmlFor="graduation_percentage" className="flex items-center gap-2">
                 Graduation Percentage
                 <span className="text-destructive">*</span>
-                {watchAllFields.graduation_percentage !== undefined && !form.formState.errors.graduation_percentage && (
+                {watchAllFields.graduation_percentage !== undefined && !isNaN(watchAllFields.graduation_percentage) && !form.formState.errors.graduation_percentage && (
                   <CheckCircle2 className="h-4 w-4 text-success" />
                 )}
               </Label>
@@ -516,7 +529,7 @@ export default function CompleteProfile() {
               <Label className="flex items-center gap-2">
                 Year of Pass Out
                 <span className="text-destructive">*</span>
-                {watchAllFields.year_of_passout && (
+                {watchAllFields.year_of_passout && !isNaN(watchAllFields.year_of_passout) && (
                   <CheckCircle2 className="h-4 w-4 text-success" />
                 )}
               </Label>
@@ -630,13 +643,18 @@ export default function CompleteProfile() {
                 onUploadComplete={handleResumeUpload}
               />
             )}
+            {!resumeUrl && (
+              <p className="text-sm text-destructive mt-2">
+                * Resume is required to proceed.
+              </p>
+            )}
           </div>
 
           {/* Submit button */}
           <Button
             type="submit"
             className="w-full h-12 text-base font-medium"
-            disabled={isLoading || !isFormValid}
+            disabled={isLoading || !isReadyToSubmit}
           >
             {isLoading ? (
               <>
@@ -645,7 +663,7 @@ export default function CompleteProfile() {
               </>
             ) : (
               <>
-                {isFormValid ? 'Continue to Dashboard' : 'Complete all required fields'}
+                {isReadyToSubmit ? 'Continue to Dashboard' : 'Complete all required fields & Upload Resume'}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </>
             )}
